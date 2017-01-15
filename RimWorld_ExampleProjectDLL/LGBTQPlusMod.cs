@@ -10,32 +10,10 @@ using System.Text;
 
 namespace LGBTQPlusMod {
     class InteractionWorker_RomanceAttempt_Inclusive : InteractionWorker_RomanceAttempt {
-        private bool debug = false;
+        private bool debug = true;
         public InteractionWorker_RomanceAttempt_Inclusive() {
             if(debug)Log.Message("Gayness Loaded!");
-            try {
-                string[] lines = File.ReadAllLines(GenFilePaths.SaveDataFolderPath + "\\gayness.kns", Encoding.UTF8);
-                if(debug)Log.Message("read file");
-                foreach (string line in lines) {
-                    string name = Regex.Split(line, ":")[0];
-                    float kinsey;
-                    if (!float.TryParse(Regex.Split(line, ":")[1], out kinsey)) {
-                        Log.Warning("Corrupted Kinsey Save File!");
-                        continue;
-                    }
-                    foreach (Pawn candidate in Find.MapPawns.AllPawns) {
-                        if (candidate.Name == null) continue;
-                        if (candidate.Name.ToStringFull.Equals(name)) {
-                            Kinsey.Add(candidate, kinsey);
-                            continue;
-                        }
-                    }
-                }
-            }catch(FileNotFoundException) {
-                Log.Message("No Kinsey Save file, making a new one");
-            }
         }
-        Dictionary<Pawn, float> Kinsey = new Dictionary<Pawn, float>();
         public override float RandomSelectionWeight(Pawn initiator, Pawn recipient) {
             if (LovePartnerRelationUtility.LovePartnerRelationExists(initiator, recipient)) {
                 return 0f;
@@ -80,10 +58,12 @@ namespace LGBTQPlusMod {
                     initiator,
                     recipient
                 });
-                initiator.needs.mood.thoughts.memories.RemoveSocialMemoryThoughts(ThoughtDefOf.BrokeUpWithMe, recipient);
-                recipient.needs.mood.thoughts.memories.RemoveSocialMemoryThoughts(ThoughtDefOf.BrokeUpWithMe, initiator);
-                initiator.needs.mood.thoughts.memories.RemoveSocialMemoryThoughts(ThoughtDefOf.FailedRomanceAttemptOnMe, recipient);
-                recipient.needs.mood.thoughts.memories.RemoveSocialMemoryThoughts(ThoughtDefOf.FailedRomanceAttemptOnMe, initiator);
+                initiator.needs.mood.thoughts.memories.RemoveMemoryThoughtsOfDefWhereOtherPawnIs(ThoughtDefOf.BrokeUpWithMe, recipient);
+                recipient.needs.mood.thoughts.memories.RemoveMemoryThoughtsOfDefWhereOtherPawnIs(ThoughtDefOf.BrokeUpWithMe, initiator);
+                initiator.needs.mood.thoughts.memories.RemoveMemoryThoughtsOfDefWhereOtherPawnIs(ThoughtDefOf.FailedRomanceAttemptOnMe, recipient);
+                initiator.needs.mood.thoughts.memories.RemoveMemoryThoughtsOfDefWhereOtherPawnIs(ThoughtDefOf.FailedRomanceAttemptOnMeLowOpinionMood, recipient);
+                recipient.needs.mood.thoughts.memories.RemoveMemoryThoughtsOfDefWhereOtherPawnIs(ThoughtDefOf.FailedRomanceAttemptOnMe, initiator);
+                recipient.needs.mood.thoughts.memories.RemoveMemoryThoughtsOfDefWhereOtherPawnIs(ThoughtDefOf.FailedRomanceAttemptOnMeLowOpinionMood, initiator);
                 if (initiator.IsColonist || recipient.IsColonist) {
                     this.SendNewLoversLetter(initiator, recipient, list, list2);
                 }
@@ -92,6 +72,9 @@ namespace LGBTQPlusMod {
             } else {
                 initiator.needs.mood.thoughts.memories.TryGainMemoryThought(ThoughtDefOf.RebuffedMyRomanceAttempt, recipient);
                 recipient.needs.mood.thoughts.memories.TryGainMemoryThought(ThoughtDefOf.FailedRomanceAttemptOnMe, initiator);
+                if (recipient.relations.OpinionOf(initiator) <= 0) {
+                    recipient.needs.mood.thoughts.memories.TryGainMemoryThought(ThoughtDefOf.FailedRomanceAttemptOnMeLowOpinionMood, initiator);
+                }
                 extraSentencePacks.Add(RulePackDefOf.Sentence_RomanceAttemptRejected);
             }
         }
@@ -113,31 +96,36 @@ namespace LGBTQPlusMod {
             }
             if (pawn != null) {
                 num2 *= Mathf.InverseLerp(100f, 0f, (float)recipient.relations.OpinionOf(pawn));
-                num2 *= Mathf.Clamp01(1f - recipient.relations.AttractionTo(pawn));
+                num2 *= Mathf.Clamp01(1f - this.AttractionTo(recipient, pawn));
             }
             num *= num2;
             return Mathf.Clamp01(num);
         }
 
         private float AttractionTo(Pawn initiator, Pawn recipient) {
-            float kinsey;
-            if (!Kinsey.ContainsKey(initiator)) {
-                kinsey = Rand.Value;
-                Kinsey.Add(initiator, kinsey);
-                Save();
-            } else {
-                Kinsey.TryGetValue(initiator, out kinsey);
+            int sum = 0;
+            string[] parts = initiator.Name.ToStringFull.Split('"');
+            string name;
+            if (parts.Length > 1)
+                name = parts[0].Trim() + " " + parts[2].Trim();
+            else
+                name = initiator.Name.ToStringFull;
+
+            foreach (char i in name) {
+                sum += i;
             }
+            float kinsey = (float)(sum % 7) / 7;
+            
+            if (debug) Log.Message(initiator.Name.ToString() + initiator.Name.ToStringFull + " has kinsey " + kinsey);
             if (initiator.def != recipient.def || initiator == recipient) {
                 return 0f;
             }
-            if(debug)Log.Message(initiator.NameStringShort + " has kinsey " + kinsey);
             float num2 = 1f;
             float ageBiologicalYearsFloat = initiator.ageTracker.AgeBiologicalYearsFloat;
             float ageBiologicalYearsFloat2 = recipient.ageTracker.AgeBiologicalYearsFloat;
             float minBound = 16;
             if (ageBiologicalYearsFloat - 15 > minBound) minBound = ageBiologicalYearsFloat-15;
-            //num2 = GenMath.FlatHill(minBound, ageBiologicalYearsFloat-5, ageBiologicalYearsFloat+5, ageBiologicalYearsFloat + 15f, ageBiologicalYearsFloat2);
+            num2 = GenMath.FlatHill(minBound, ageBiologicalYearsFloat-5, ageBiologicalYearsFloat+5, ageBiologicalYearsFloat + 15f, ageBiologicalYearsFloat2);
             num2 = 1;
             if(initiator.gender != recipient.gender) {
                 kinsey = 1 - kinsey;
@@ -159,7 +147,7 @@ namespace LGBTQPlusMod {
             float num6 = Mathf.InverseLerp(16f, 18f, ageBiologicalYearsFloat);
             float num7 = Mathf.InverseLerp(16f, 18f, ageBiologicalYearsFloat2);
 
-            return kinsey * num2 * num3 * num4 * num5 * num6 * num7;
+            return kinsey * num2 * num3 * num4 * num5 * num6 * num7 * 10;
         }
         private void BreakLoverAndFianceRelations(Pawn pawn, out List<Pawn> oldLoversAndFiances) {
             oldLoversAndFiances = new List<Pawn>();
@@ -256,13 +244,6 @@ namespace LGBTQPlusMod {
                 }
             }
             Find.LetterStack.ReceiveLetter(label, stringBuilder.ToString().TrimEndNewlines(), type, t, null);
-        }
-        private void Save() {
-            LinkedList<string> lines = new LinkedList<string>();
-            foreach(KeyValuePair<Pawn, float> entry in Kinsey) {
-                lines.AddLast(entry.Key.Name.ToStringFull + ":" + entry.Value);
-            }
-            File.WriteAllLines(GenFilePaths.SaveDataFolderPath + "/gayness.kns", lines.ToArray());
         }
     }
 }
