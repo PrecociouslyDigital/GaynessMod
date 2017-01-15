@@ -120,6 +120,9 @@ namespace LGBTQPlusMod {
             if (initiator.def != recipient.def || initiator == recipient) {
                 return 0f;
             }
+            if (initiator.story.traits.HasTrait(TraitDef.Named("Aromantic/Asexual"))) {
+                return 0f;
+            }
             float num2 = 1f;
             float ageBiologicalYearsFloat = initiator.ageTracker.AgeBiologicalYearsFloat;
             float ageBiologicalYearsFloat2 = recipient.ageTracker.AgeBiologicalYearsFloat;
