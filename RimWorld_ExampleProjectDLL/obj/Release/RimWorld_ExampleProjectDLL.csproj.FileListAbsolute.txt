@@ -1,0 +1,5 @@
+C:\Users\SkyBlu\Desktop\WorkBench\LgbtqMod\RimWorld_ExampleProjectDLL\bin\Release\RimWorldLgbtqPlusMod.dll
+C:\Users\SkyBlu\Desktop\WorkBench\LgbtqMod\RimWorld_ExampleProjectDLL\bin\Release\RimWorldLgbtqPlusMod.pdb
+C:\Users\SkyBlu\Desktop\WorkBench\LgbtqMod\RimWorld_ExampleProjectDLL\obj\Release\RimWorld_ExampleProjectDLL.csprojResolveAssemblyReference.cache
+C:\Users\SkyBlu\Desktop\WorkBench\LgbtqMod\RimWorld_ExampleProjectDLL\obj\Release\RimWorldLgbtqPlusMod.dll
+C:\Users\SkyBlu\Desktop\WorkBench\LgbtqMod\RimWorld_ExampleProjectDLL\obj\Release\RimWorldLgbtqPlusMod.pdb

@@ -24,3 +24,8 @@ D:\_Programmierung\_GitHub_Repositories\Ludeon\ExampleDllMod\RimWorld_ExamplePro
 D:\_Programmierung\_GitHub_Repositories\Ludeon\ExampleDllMod\RimWorld_ExampleProjectDLL\bin\Debug\RimWorldExampleProjectDLL.pdb
 D:\_Programmierung\_GitHub_Repositories\Ludeon\ExampleDllMod\RimWorld_ExampleProjectDLL\obj\Debug\RimWorldExampleProjectDLL.dll
 D:\_Programmierung\_GitHub_Repositories\Ludeon\ExampleDllMod\RimWorld_ExampleProjectDLL\obj\Debug\RimWorldExampleProjectDLL.pdb
+C:\Users\SkyBlu\Desktop\WorkBench\LgbtqMod\RimWorld_ExampleProjectDLL\bin\Debug\RimWorldLgbtqPlusMod.dll
+C:\Users\SkyBlu\Desktop\WorkBench\LgbtqMod\RimWorld_ExampleProjectDLL\bin\Debug\RimWorldLgbtqPlusMod.pdb
+C:\Users\SkyBlu\Desktop\WorkBench\LgbtqMod\RimWorld_ExampleProjectDLL\obj\Debug\RimWorldLgbtqPlusMod.dll
+C:\Users\SkyBlu\Desktop\WorkBench\LgbtqMod\RimWorld_ExampleProjectDLL\obj\Debug\RimWorldLgbtqPlusMod.pdb
+C:\Users\SkyBlu\Desktop\WorkBench\LgbtqMod\RimWorld_ExampleProjectDLL\obj\Debug\RimWorld_ExampleProjectDLL.csprojResolveAssemblyReference.cache
