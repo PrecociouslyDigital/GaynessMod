@@ -10,7 +10,7 @@ using System.Text;
 
 namespace LGBTQPlusMod {
     class InteractionWorker_RomanceAttempt_Inclusive : InteractionWorker_RomanceAttempt {
-        private bool debug = true;
+        private bool debug = false;
         public InteractionWorker_RomanceAttempt_Inclusive() {
             if(debug)Log.Message("Gayness Loaded!");
         }
